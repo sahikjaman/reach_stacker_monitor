@@ -14,6 +14,7 @@ Buka: http://localhost:5174
 ### 2. Test dengan Dummy Data
 
 Buka file `test-sender.html` di browser:
+
 - Pilih unit (RS-A/B/C)
 - Set sensor values
 - Klik "Send Data"
@@ -34,7 +35,7 @@ Buka file `test-sender.html` di browser:
 **File:** `src/ReachStackerDashboard.jsx`
 
 ```javascript
-const GOOGLE_SCRIPT_URL = 'YOUR_NEW_URL_HERE';
+const GOOGLE_SCRIPT_URL = "YOUR_NEW_URL_HERE";
 ```
 
 ### Build untuk Production
@@ -48,6 +49,7 @@ Hasil ada di folder `dist/`
 ### Test API Endpoint
 
 Buka di browser:
+
 ```
 https://script.google.com/.../exec?id=RS-A
 ```
@@ -74,19 +76,23 @@ Content-Type: application/json
 ## 🔧 ESP32 Quick Setup
 
 ### 1. Install Arduino IDE
+
 Download: https://www.arduino.cc/en/software
 
 ### 2. Install ESP32 Support
+
 - File > Preferences
 - Additional URLs: `https://dl.espressif.com/dl/package_esp32_index.json`
 - Tools > Board Manager > Install "esp32"
 
 ### 3. Install Libraries
+
 - ArduinoJson
 - WiFi (built-in)
 - HTTPClient (built-in)
 
 ### 4. Configure & Upload
+
 File: `esp32/reach_stacker_monitor.ino`
 
 ```cpp
@@ -104,16 +110,19 @@ Upload → Monitor Serial (115200 baud)
 ## 📊 Dashboard Features
 
 ### Multi-Unit Switching
+
 - Klik menu icon (☰)
 - Pilih RS-A, RS-B, atau RS-C
 - Dashboard update otomatis
 
 ### View Charts
+
 - Temperature & Pressure
 - Oil & Fuel Levels
 - Engine RPM History
 
 ### Enable Alerts
+
 1. Klik bell icon 🔔
 2. Allow browser notifications
 3. Alerts akan muncul untuk:
@@ -124,6 +133,7 @@ Upload → Monitor Serial (115200 baud)
    - Emergency Stop
 
 ### Connection Status
+
 - 🟢 Connected - Update < 1 min ago
 - 🟡 Slow - Update 1-5 min ago
 - 🔴 Disconnected - No update > 5 min
@@ -132,18 +142,19 @@ Upload → Monitor Serial (115200 baud)
 
 ## 🎯 Status Thresholds
 
-| Parameter | 🟢 Normal | 🟡 Warning | 🔴 Danger |
-|-----------|----------|-----------|----------|
-| Temp | < 80°C | 80-90°C | > 90°C |
-| Press | < 130 bar | 130-150 bar | > 150 bar |
-| Oil | > 50% | 30-50% | < 30% |
-| Fuel | > 40% | 20-40% | < 20% |
+| Parameter | 🟢 Normal | 🟡 Warning  | 🔴 Danger |
+| --------- | --------- | ----------- | --------- |
+| Temp      | < 80°C    | 80-90°C     | > 90°C    |
+| Press     | < 130 bar | 130-150 bar | > 150 bar |
+| Oil       | > 50%     | 30-50%      | < 30%     |
+| Fuel      | > 40%     | 20-40%      | < 20%     |
 
 ---
 
 ## 🐛 Quick Troubleshooting
 
 ### Dashboard tidak update?
+
 ```bash
 # 1. Cek API endpoint
 # Buka di browser:
@@ -157,6 +168,7 @@ Ctrl+R atau klik refresh button
 ```
 
 ### ESP32 tidak kirim data?
+
 ```
 1. Cek serial monitor (115200 baud)
 2. Verify WiFi connected
@@ -165,6 +177,7 @@ Ctrl+R atau klik refresh button
 ```
 
 ### Notifikasi tidak muncul?
+
 ```
 1. Klik bell icon 🔔
 2. Allow di browser prompt
@@ -188,7 +201,7 @@ Ctrl+R atau klik refresh button
 https://docs.google.com/spreadsheets/d/1yU8Ob6_3s0LTMQXiCEipgxubqsNherQlUdRghWjZsCg/edit
 
 **Apps Script API:**
-https://script.google.com/macros/s/AKfycbwQISoKcQ2iHnCc_LCveKKDBgRmTE-8TnM1DhDHpB9iqnsnsxnQjaiIV5zsXiA_tqBZxQ/exec
+https://script.google.com/macros/s/AKfycbxWR6P0gby8gHFRFCPJIE3I85VAR3z45rCJ7FPhPdwqGoyNu9kyRKB2GMw_JS05FBm4gA/exec
 
 ---
 

@@ -1,524 +1,589 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Test Data Sender - Reach Stacker</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 28px;
-        }
-        
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 600;
-            font-size: 14px;
-        }
-        
-        select, input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border 0.3s;
-        }
-        
-        select:focus, input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .sensor-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .range-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        input[type="range"] {
-            flex: 1;
-        }
-        
-        .value-display {
-            min-width: 80px;
-            text-align: center;
-            padding: 8px;
-            background: #f5f5f5;
-            border-radius: 6px;
-            font-weight: 600;
-            color: #667eea;
-        }
-        
-        .button-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        button {
-            padding: 14px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-send {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .btn-send:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }
-        
-        .btn-auto {
-            background: #10b981;
-            color: white;
-        }
-        
-        .btn-auto:hover {
-            background: #059669;
-        }
-        
-        .btn-auto.active {
-            background: #ef4444;
-        }
-        
-        .btn-random {
-            background: #f59e0b;
-            color: white;
-        }
-        
-        .btn-random:hover {
-            background: #d97706;
-        }
-        
-        .btn-preset {
-            background: #6b7280;
-            color: white;
-        }
-        
-        .btn-preset:hover {
-            background: #4b5563;
-        }
-        
-        .status {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 14px;
-            display: none;
-        }
-        
-        .status.success {
-            background: #d1fae5;
-            color: #065f46;
-            display: block;
-        }
-        
-        .status.error {
-            background: #fee2e2;
-            color: #991b1b;
-            display: block;
-        }
-        
-        .status.info {
-            background: #dbeafe;
-            color: #1e40af;
-            display: block;
-        }
-        
-        .log {
-            margin-top: 20px;
-            background: #1e293b;
-            color: #e2e8f0;
-            padding: 15px;
-            border-radius: 8px;
-            max-height: 300px;
-            overflow-y: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-        }
-        
-        .log-entry {
-            margin-bottom: 8px;
-            padding: 4px 0;
-            border-bottom: 1px solid #334155;
-        }
-        
-        .timestamp {
-            color: #94a3b8;
-            margin-right: 10px;
-        }
-        
-        .emergency-toggle {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .toggle {
-            position: relative;
-            width: 60px;
-            height: 30px;
-        }
-        
-        .toggle input {
-            display: none;
-        }
-        
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #cbd5e1;
-            transition: 0.4s;
-            border-radius: 30px;
-        }
-        
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 22px;
-            width: 22px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: 0.4s;
-            border-radius: 50%;
-        }
-        
-        input:checked + .slider {
-            background-color: #ef4444;
-        }
-        
-        input:checked + .slider:before {
-            transform: translateX(30px);
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      h1 {
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 28px;
+      }
+
+      .subtitle {
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 14px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      select,
+      input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: border 0.3s;
+      }
+
+      select:focus,
+      input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .sensor-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .range-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      input[type="range"] {
+        flex: 1;
+      }
+
+      .value-display {
+        min-width: 80px;
+        text-align: center;
+        padding: 8px;
+        background: #f5f5f5;
+        border-radius: 6px;
+        font-weight: 600;
+        color: #667eea;
+      }
+
+      .button-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      button {
+        padding: 14px 24px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .btn-send {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .btn-send:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-auto {
+        background: #10b981;
+        color: white;
+      }
+
+      .btn-auto:hover {
+        background: #059669;
+      }
+
+      .btn-auto.active {
+        background: #ef4444;
+      }
+
+      .btn-random {
+        background: #f59e0b;
+        color: white;
+      }
+
+      .btn-random:hover {
+        background: #d97706;
+      }
+
+      .btn-preset {
+        background: #6b7280;
+        color: white;
+      }
+
+      .btn-preset:hover {
+        background: #4b5563;
+      }
+
+      .status {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 8px;
+        font-size: 14px;
+        display: none;
+      }
+
+      .status.success {
+        background: #d1fae5;
+        color: #065f46;
+        display: block;
+      }
+
+      .status.error {
+        background: #fee2e2;
+        color: #991b1b;
+        display: block;
+      }
+
+      .status.info {
+        background: #dbeafe;
+        color: #1e40af;
+        display: block;
+      }
+
+      .log {
+        margin-top: 20px;
+        background: #1e293b;
+        color: #e2e8f0;
+        padding: 15px;
+        border-radius: 8px;
+        max-height: 300px;
+        overflow-y: auto;
+        font-family: "Courier New", monospace;
+        font-size: 12px;
+      }
+
+      .log-entry {
+        margin-bottom: 8px;
+        padding: 4px 0;
+        border-bottom: 1px solid #334155;
+      }
+
+      .timestamp {
+        color: #94a3b8;
+        margin-right: 10px;
+      }
+
+      .emergency-toggle {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .toggle {
+        position: relative;
+        width: 60px;
+        height: 30px;
+      }
+
+      .toggle input {
+        display: none;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #cbd5e1;
+        transition: 0.4s;
+        border-radius: 30px;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 22px;
+        width: 22px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: 0.4s;
+        border-radius: 50%;
+      }
+
+      input:checked + .slider {
+        background-color: #ef4444;
+      }
+
+      input:checked + .slider:before {
+        transform: translateX(30px);
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h1>🚨 Test Data Sender</h1>
-        <p class="subtitle">Kirim data dummy ke Google Sheets untuk testing dashboard</p>
-        
+      <h1>🚨 Test Data Sender</h1>
+      <p class="subtitle">
+        Kirim data dummy ke Google Sheets untuk testing dashboard
+      </p>
+
+      <div class="form-group">
+        <label>Pilih Reach Stacker Unit:</label>
+        <select id="unitSelect">
+          <option value="RS-A">RS-A (Reach Stacker A)</option>
+          <option value="RS-B">RS-B (Reach Stacker B)</option>
+          <option value="RS-C">RS-C (Reach Stacker C)</option>
+        </select>
+      </div>
+
+      <div class="sensor-grid">
         <div class="form-group">
-            <label>Pilih Reach Stacker Unit:</label>
-            <select id="unitSelect">
-                <option value="RS-A">RS-A (Reach Stacker A)</option>
-                <option value="RS-B">RS-B (Reach Stacker B)</option>
-                <option value="RS-C">RS-C (Reach Stacker C)</option>
-            </select>
+          <label>Temperature (°C): <span id="tempValue">75</span></label>
+          <input
+            type="range"
+            id="tempSlider"
+            min="20"
+            max="120"
+            value="75"
+            step="0.1"
+          />
         </div>
-        
-        <div class="sensor-grid">
-            <div class="form-group">
-                <label>Temperature (°C): <span id="tempValue">75</span></label>
-                <input type="range" id="tempSlider" min="20" max="120" value="75" step="0.1">
-            </div>
-            
-            <div class="form-group">
-                <label>Pressure (bar): <span id="pressValue">120</span></label>
-                <input type="range" id="pressSlider" min="0" max="200" value="120" step="0.1">
-            </div>
-            
-            <div class="form-group">
-                <label>Hydraulic Oil (%): <span id="oilValue">85</span></label>
-                <input type="range" id="oilSlider" min="0" max="100" value="85" step="0.1">
-            </div>
-            
-            <div class="form-group">
-                <label>Fuel Level (%): <span id="fuelValue">65</span></label>
-                <input type="range" id="fuelSlider" min="0" max="100" value="65" step="0.1">
-            </div>
-            
-            <div class="form-group">
-                <label>Engine RPM: <span id="rpmValue">1800</span></label>
-                <input type="range" id="rpmSlider" min="0" max="3000" value="1800" step="10">
-            </div>
-            
-            <div class="form-group">
-                <label>Emergency Stop:</label>
-                <div class="emergency-toggle">
-                    <label class="toggle">
-                        <input type="checkbox" id="emergencyCheck">
-                        <span class="slider"></span>
-                    </label>
-                    <span id="emergencyLabel">Normal</span>
-                </div>
-            </div>
+
+        <div class="form-group">
+          <label>Pressure (bar): <span id="pressValue">120</span></label>
+          <input
+            type="range"
+            id="pressSlider"
+            min="0"
+            max="200"
+            value="120"
+            step="0.1"
+          />
         </div>
-        
-        <div class="button-group">
-            <button class="btn-send" onclick="sendData()">📤 Send Data</button>
-            <button class="btn-auto" id="autoBtn" onclick="toggleAuto()">🔄 Auto Send</button>
-            <button class="btn-random" onclick="randomize()">🎲 Randomize</button>
-            <button class="btn-preset" onclick="setNormal()">✅ Normal</button>
-            <button class="btn-preset" onclick="setWarning()">⚠️ Warning</button>
-            <button class="btn-preset" onclick="setDanger()">🚨 Danger</button>
+
+        <div class="form-group">
+          <label>Hydraulic Oil (%): <span id="oilValue">85</span></label>
+          <input
+            type="range"
+            id="oilSlider"
+            min="0"
+            max="100"
+            value="85"
+            step="0.1"
+          />
         </div>
-        
-        <div id="status" class="status"></div>
-        
-        <div class="log" id="log">
-            <div class="log-entry">
-                <span class="timestamp">[Ready]</span>
-                <span>System ready. Klik "Send Data" untuk mengirim data pertama.</span>
-            </div>
+
+        <div class="form-group">
+          <label>Fuel Level (%): <span id="fuelValue">65</span></label>
+          <input
+            type="range"
+            id="fuelSlider"
+            min="0"
+            max="100"
+            value="65"
+            step="0.1"
+          />
         </div>
+
+        <div class="form-group">
+          <label>Engine RPM: <span id="rpmValue">1800</span></label>
+          <input
+            type="range"
+            id="rpmSlider"
+            min="0"
+            max="3000"
+            value="1800"
+            step="10"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Emergency Stop:</label>
+          <div class="emergency-toggle">
+            <label class="toggle">
+              <input type="checkbox" id="emergencyCheck" />
+              <span class="slider"></span>
+            </label>
+            <span id="emergencyLabel">Normal</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button class="btn-send" onclick="sendData()">📤 Send Data</button>
+        <button class="btn-auto" id="autoBtn" onclick="toggleAuto()">
+          🔄 Auto Send
+        </button>
+        <button class="btn-random" onclick="randomize()">🎲 Randomize</button>
+        <button class="btn-preset" onclick="setNormal()">✅ Normal</button>
+        <button class="btn-preset" onclick="setWarning()">⚠️ Warning</button>
+        <button class="btn-preset" onclick="setDanger()">🚨 Danger</button>
+      </div>
+
+      <div id="status" class="status"></div>
+
+      <div class="log" id="log">
+        <div class="log-entry">
+          <span class="timestamp">[Ready]</span>
+          <span
+            >System ready. Klik "Send Data" untuk mengirim data pertama.</span
+          >
+        </div>
+      </div>
     </div>
 
     <script>
-        // Google Apps Script URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwQISoKcQ2iHnCc_LCveKKDBgRmTE-8TnM1DhDHpB9iqnsnsxnQjaiIV5zsXiA_tqBZxQ/exec';
-        
-        let autoSendInterval = null;
-        let sendCount = 0;
-        
-        // Update value displays
-        document.getElementById('tempSlider').oninput = function() {
-            document.getElementById('tempValue').textContent = this.value;
+      // Google Apps Script URL
+      const SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbxWR6P0gby8gHFRFCPJIE3I85VAR3z45rCJ7FPhPdwqGoyNu9kyRKB2GMw_JS05FBm4gA/exec";
+
+      let autoSendInterval = null;
+      let sendCount = 0;
+
+      // Update value displays
+      document.getElementById("tempSlider").oninput = function () {
+        document.getElementById("tempValue").textContent = this.value;
+      };
+      document.getElementById("pressSlider").oninput = function () {
+        document.getElementById("pressValue").textContent = this.value;
+      };
+      document.getElementById("oilSlider").oninput = function () {
+        document.getElementById("oilValue").textContent = this.value;
+      };
+      document.getElementById("fuelSlider").oninput = function () {
+        document.getElementById("fuelValue").textContent = this.value;
+      };
+      document.getElementById("rpmSlider").oninput = function () {
+        document.getElementById("rpmValue").textContent = this.value;
+      };
+      document.getElementById("emergencyCheck").onchange = function () {
+        document.getElementById("emergencyLabel").textContent = this.checked
+          ? "🚨 ACTIVE"
+          : "Normal";
+      };
+
+      function addLog(message, type = "info") {
+        const log = document.getElementById("log");
+        const time = new Date().toLocaleTimeString("id-ID");
+        const entry = document.createElement("div");
+        entry.className = "log-entry";
+        entry.innerHTML = `<span class="timestamp">[${time}]</span><span>${message}</span>`;
+        log.insertBefore(entry, log.firstChild);
+
+        // Keep only last 50 entries
+        while (log.children.length > 50) {
+          log.removeChild(log.lastChild);
+        }
+      }
+
+      function showStatus(message, type) {
+        const status = document.getElementById("status");
+        status.textContent = message;
+        status.className = `status ${type}`;
+        setTimeout(() => {
+          status.style.display = "none";
+        }, 5000);
+      }
+
+      async function sendData() {
+        const unit = document.getElementById("unitSelect").value;
+        const temp = parseFloat(document.getElementById("tempSlider").value);
+        const press = parseFloat(document.getElementById("pressSlider").value);
+        const oil = parseFloat(document.getElementById("oilSlider").value);
+        const fuel = parseFloat(document.getElementById("fuelSlider").value);
+        const rpm = parseInt(document.getElementById("rpmSlider").value);
+        const emergency = document.getElementById("emergencyCheck").checked
+          ? 1
+          : 0;
+
+        const payload = {
+          reachStackerID: unit,
+          temperature: temp,
+          pressure: press,
+          hydraulicOil: oil,
+          fuelLevel: fuel,
+          engineRPM: rpm,
+          emergencyStop: emergency,
         };
-        document.getElementById('pressSlider').oninput = function() {
-            document.getElementById('pressValue').textContent = this.value;
-        };
-        document.getElementById('oilSlider').oninput = function() {
-            document.getElementById('oilValue').textContent = this.value;
-        };
-        document.getElementById('fuelSlider').oninput = function() {
-            document.getElementById('fuelValue').textContent = this.value;
-        };
-        document.getElementById('rpmSlider').oninput = function() {
-            document.getElementById('rpmValue').textContent = this.value;
-        };
-        document.getElementById('emergencyCheck').onchange = function() {
-            document.getElementById('emergencyLabel').textContent = this.checked ? '🚨 ACTIVE' : 'Normal';
-        };
-        
-        function addLog(message, type = 'info') {
-            const log = document.getElementById('log');
-            const time = new Date().toLocaleTimeString('id-ID');
-            const entry = document.createElement('div');
-            entry.className = 'log-entry';
-            entry.innerHTML = `<span class="timestamp">[${time}]</span><span>${message}</span>`;
-            log.insertBefore(entry, log.firstChild);
-            
-            // Keep only last 50 entries
-            while (log.children.length > 50) {
-                log.removeChild(log.lastChild);
-            }
+
+        addLog(`Sending data for ${unit}...`, "info");
+
+        try {
+          const response = await fetch(SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          sendCount++;
+          const msg = `✅ Data sent successfully (${sendCount}) - ${unit}`;
+          showStatus(msg, "success");
+          addLog(msg + ` - Temp: ${temp}°C, Press: ${press}bar`, "success");
+        } catch (error) {
+          const msg = `❌ Error: ${error.message}`;
+          showStatus(msg, "error");
+          addLog(msg, "error");
         }
-        
-        function showStatus(message, type) {
-            const status = document.getElementById('status');
-            status.textContent = message;
-            status.className = `status ${type}`;
-            setTimeout(() => {
-                status.style.display = 'none';
-            }, 5000);
+      }
+
+      function toggleAuto() {
+        const btn = document.getElementById("autoBtn");
+
+        if (autoSendInterval) {
+          clearInterval(autoSendInterval);
+          autoSendInterval = null;
+          btn.textContent = "🔄 Auto Send";
+          btn.classList.remove("active");
+          addLog("⏸️ Auto send stopped", "info");
+          showStatus("Auto send stopped", "info");
+        } else {
+          autoSendInterval = setInterval(() => {
+            sendData();
+          }, 10000); // Send every 10 seconds
+          btn.textContent = "⏹️ Stop Auto";
+          btn.classList.add("active");
+          addLog("▶️ Auto send started (every 10s)", "info");
+          showStatus("Auto send started - sending every 10 seconds", "success");
+          sendData(); // Send immediately
         }
-        
-        async function sendData() {
-            const unit = document.getElementById('unitSelect').value;
-            const temp = parseFloat(document.getElementById('tempSlider').value);
-            const press = parseFloat(document.getElementById('pressSlider').value);
-            const oil = parseFloat(document.getElementById('oilSlider').value);
-            const fuel = parseFloat(document.getElementById('fuelSlider').value);
-            const rpm = parseInt(document.getElementById('rpmSlider').value);
-            const emergency = document.getElementById('emergencyCheck').checked ? 1 : 0;
-            
-            const payload = {
-                reachStackerID: unit,
-                temperature: temp,
-                pressure: press,
-                hydraulicOil: oil,
-                fuelLevel: fuel,
-                engineRPM: rpm,
-                emergencyStop: emergency
-            };
-            
-            addLog(`Sending data for ${unit}...`, 'info');
-            
-            try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                });
-                
-                sendCount++;
-                const msg = `✅ Data sent successfully (${sendCount}) - ${unit}`;
-                showStatus(msg, 'success');
-                addLog(msg + ` - Temp: ${temp}°C, Press: ${press}bar`, 'success');
-            } catch (error) {
-                const msg = `❌ Error: ${error.message}`;
-                showStatus(msg, 'error');
-                addLog(msg, 'error');
-            }
-        }
-        
-        function toggleAuto() {
-            const btn = document.getElementById('autoBtn');
-            
-            if (autoSendInterval) {
-                clearInterval(autoSendInterval);
-                autoSendInterval = null;
-                btn.textContent = '🔄 Auto Send';
-                btn.classList.remove('active');
-                addLog('⏸️ Auto send stopped', 'info');
-                showStatus('Auto send stopped', 'info');
-            } else {
-                autoSendInterval = setInterval(() => {
-                    sendData();
-                }, 10000); // Send every 10 seconds
-                btn.textContent = '⏹️ Stop Auto';
-                btn.classList.add('active');
-                addLog('▶️ Auto send started (every 10s)', 'info');
-                showStatus('Auto send started - sending every 10 seconds', 'success');
-                sendData(); // Send immediately
-            }
-        }
-        
-        function randomize() {
-            document.getElementById('tempSlider').value = (Math.random() * 60 + 40).toFixed(1);
-            document.getElementById('pressSlider').value = (Math.random() * 100 + 80).toFixed(1);
-            document.getElementById('oilSlider').value = (Math.random() * 50 + 40).toFixed(1);
-            document.getElementById('fuelSlider').value = (Math.random() * 60 + 30).toFixed(1);
-            document.getElementById('rpmSlider').value = Math.floor(Math.random() * 1500 + 1000);
-            
-            // Trigger oninput to update displays
-            document.getElementById('tempSlider').oninput();
-            document.getElementById('pressSlider').oninput();
-            document.getElementById('oilSlider').oninput();
-            document.getElementById('fuelSlider').oninput();
-            document.getElementById('rpmSlider').oninput();
-            
-            addLog('🎲 Values randomized', 'info');
-        }
-        
-        function setNormal() {
-            document.getElementById('tempSlider').value = 75;
-            document.getElementById('pressSlider').value = 120;
-            document.getElementById('oilSlider').value = 85;
-            document.getElementById('fuelSlider').value = 70;
-            document.getElementById('rpmSlider').value = 1800;
-            document.getElementById('emergencyCheck').checked = false;
-            
-            updateAllDisplays();
-            addLog('✅ Set to NORMAL values', 'info');
-        }
-        
-        function setWarning() {
-            document.getElementById('tempSlider').value = 85;
-            document.getElementById('pressSlider').value = 140;
-            document.getElementById('oilSlider').value = 45;
-            document.getElementById('fuelSlider').value = 35;
-            document.getElementById('rpmSlider').value = 2200;
-            document.getElementById('emergencyCheck').checked = false;
-            
-            updateAllDisplays();
-            addLog('⚠️ Set to WARNING values', 'info');
-        }
-        
-        function setDanger() {
-            document.getElementById('tempSlider').value = 95;
-            document.getElementById('pressSlider').value = 160;
-            document.getElementById('oilSlider').value = 25;
-            document.getElementById('fuelSlider').value = 15;
-            document.getElementById('rpmSlider').value = 2800;
-            document.getElementById('emergencyCheck').checked = true;
-            
-            updateAllDisplays();
-            addLog('🚨 Set to DANGER values', 'info');
-        }
-        
-        function updateAllDisplays() {
-            document.getElementById('tempSlider').oninput();
-            document.getElementById('pressSlider').oninput();
-            document.getElementById('oilSlider').oninput();
-            document.getElementById('fuelSlider').oninput();
-            document.getElementById('rpmSlider').oninput();
-            document.getElementById('emergencyCheck').onchange();
-        }
-        
-        // Initial display update
+      }
+
+      function randomize() {
+        document.getElementById("tempSlider").value = (
+          Math.random() * 60 +
+          40
+        ).toFixed(1);
+        document.getElementById("pressSlider").value = (
+          Math.random() * 100 +
+          80
+        ).toFixed(1);
+        document.getElementById("oilSlider").value = (
+          Math.random() * 50 +
+          40
+        ).toFixed(1);
+        document.getElementById("fuelSlider").value = (
+          Math.random() * 60 +
+          30
+        ).toFixed(1);
+        document.getElementById("rpmSlider").value = Math.floor(
+          Math.random() * 1500 + 1000
+        );
+
+        // Trigger oninput to update displays
+        document.getElementById("tempSlider").oninput();
+        document.getElementById("pressSlider").oninput();
+        document.getElementById("oilSlider").oninput();
+        document.getElementById("fuelSlider").oninput();
+        document.getElementById("rpmSlider").oninput();
+
+        addLog("🎲 Values randomized", "info");
+      }
+
+      function setNormal() {
+        document.getElementById("tempSlider").value = 75;
+        document.getElementById("pressSlider").value = 120;
+        document.getElementById("oilSlider").value = 85;
+        document.getElementById("fuelSlider").value = 70;
+        document.getElementById("rpmSlider").value = 1800;
+        document.getElementById("emergencyCheck").checked = false;
+
         updateAllDisplays();
-        
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey || e.metaKey) {
-                switch(e.key) {
-                    case 'Enter':
-                        e.preventDefault();
-                        sendData();
-                        break;
-                    case ' ':
-                        e.preventDefault();
-                        toggleAuto();
-                        break;
-                    case 'r':
-                        e.preventDefault();
-                        randomize();
-                        break;
-                }
-            }
-        });
-        
-        addLog('💡 Tip: Use Ctrl+Enter to send, Ctrl+Space to toggle auto, Ctrl+R to randomize', 'info');
+        addLog("✅ Set to NORMAL values", "info");
+      }
+
+      function setWarning() {
+        document.getElementById("tempSlider").value = 85;
+        document.getElementById("pressSlider").value = 140;
+        document.getElementById("oilSlider").value = 45;
+        document.getElementById("fuelSlider").value = 35;
+        document.getElementById("rpmSlider").value = 2200;
+        document.getElementById("emergencyCheck").checked = false;
+
+        updateAllDisplays();
+        addLog("⚠️ Set to WARNING values", "info");
+      }
+
+      function setDanger() {
+        document.getElementById("tempSlider").value = 95;
+        document.getElementById("pressSlider").value = 160;
+        document.getElementById("oilSlider").value = 25;
+        document.getElementById("fuelSlider").value = 15;
+        document.getElementById("rpmSlider").value = 2800;
+        document.getElementById("emergencyCheck").checked = true;
+
+        updateAllDisplays();
+        addLog("🚨 Set to DANGER values", "info");
+      }
+
+      function updateAllDisplays() {
+        document.getElementById("tempSlider").oninput();
+        document.getElementById("pressSlider").oninput();
+        document.getElementById("oilSlider").oninput();
+        document.getElementById("fuelSlider").oninput();
+        document.getElementById("rpmSlider").oninput();
+        document.getElementById("emergencyCheck").onchange();
+      }
+
+      // Initial display update
+      updateAllDisplays();
+
+      // Keyboard shortcuts
+      document.addEventListener("keydown", (e) => {
+        if (e.ctrlKey || e.metaKey) {
+          switch (e.key) {
+            case "Enter":
+              e.preventDefault();
+              sendData();
+              break;
+            case " ":
+              e.preventDefault();
+              toggleAuto();
+              break;
+            case "r":
+              e.preventDefault();
+              randomize();
+              break;
+          }
+        }
+      });
+
+      addLog(
+        "💡 Tip: Use Ctrl+Enter to send, Ctrl+Space to toggle auto, Ctrl+R to randomize",
+        "info"
+      );
     </script>
-</body>
+  </body>
 </html>

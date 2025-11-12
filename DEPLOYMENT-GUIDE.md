@@ -3,6 +3,7 @@
 ## 📋 Overview
 
 Sistem monitoring terdiri dari 3 komponen utama:
+
 1. **ESP32 Hardware** - Sensor data collection
 2. **Google Apps Script** - Data processing & storage
 3. **React Dashboard** - Data visualization
@@ -12,15 +13,18 @@ Sistem monitoring terdiri dari 3 komponen utama:
 ## 🔧 Part 1: Google Apps Script Setup
 
 ### Step 1: Buka Google Sheets
+
 1. Buka: https://docs.google.com/spreadsheets/d/1yU8Ob6_3s0LTMQXiCEipgxubqsNherQlUdRghWjZsCg/edit
 2. Pastikan ada sheet: `RS-A`, `RS-B`, `RS-C`
 
 ### Step 2: Verify Apps Script
+
 1. Klik **Extensions** > **Apps Script**
 2. Pastikan kode sudah sesuai dengan Apps Script yang diberikan
 3. Cek `SPREADSHEET_ID` sesuai dengan ID spreadsheet Anda
 
 ### Step 3: Deploy Web App
+
 1. Di Apps Script editor, klik **Deploy** > **New deployment**
 2. Pilih type: **Web app**
 3. Settings:
@@ -32,12 +36,15 @@ Sistem monitoring terdiri dari 3 komponen utama:
 6. **Update URL ini di dashboard!**
 
 ### Step 4: Test API
+
 Test dengan browser atau Postman:
+
 ```
 GET https://script.google.com/macros/s/YOUR_ID/exec?id=RS-A
 ```
 
 Expected response:
+
 ```json
 {
   "status": "success",
@@ -51,26 +58,31 @@ Expected response:
 ## 💻 Part 2: Dashboard Setup
 
 ### Step 1: Install Dependencies
+
 ```bash
 cd laporan-pekerjaan
 npm install
 ```
 
 ### Step 2: Update Configuration
+
 Edit `src/config.js`:
+
 ```javascript
 export const config = {
-  googleScriptUrl: 'YOUR_ACTUAL_SCRIPT_URL_HERE',
+  googleScriptUrl: "YOUR_ACTUAL_SCRIPT_URL_HERE",
   // ... rest of config
 };
 ```
 
 ATAU edit langsung di `src/ReachStackerDashboard.jsx`:
+
 ```javascript
-const GOOGLE_SCRIPT_URL = 'YOUR_ACTUAL_SCRIPT_URL_HERE';
+const GOOGLE_SCRIPT_URL = "YOUR_ACTUAL_SCRIPT_URL_HERE";
 ```
 
 ### Step 3: Test Locally
+
 ```bash
 npm run dev
 ```
@@ -78,6 +90,7 @@ npm run dev
 Buka browser: `http://localhost:5173`
 
 ### Step 4: Build for Production
+
 ```bash
 npm run build
 ```
@@ -87,12 +100,15 @@ Output ada di folder `dist/`
 ### Step 5: Deploy Dashboard
 
 #### Option A: Vercel (Recommended)
+
 1. Install Vercel CLI:
+
 ```bash
 npm install -g vercel
 ```
 
 2. Deploy:
+
 ```bash
 vercel --prod
 ```
@@ -101,23 +117,29 @@ vercel --prod
 4. Get deployed URL
 
 #### Option B: Netlify
+
 1. Install Netlify CLI:
+
 ```bash
 npm install -g netlify-cli
 ```
 
 2. Deploy:
+
 ```bash
 netlify deploy --prod --dir=dist
 ```
 
 #### Option C: GitHub Pages
+
 1. Install gh-pages:
+
 ```bash
 npm install --save-dev gh-pages
 ```
 
 2. Update `package.json`:
+
 ```json
 {
   "scripts": {
@@ -129,12 +151,15 @@ npm install --save-dev gh-pages
 ```
 
 3. Deploy:
+
 ```bash
 npm run deploy
 ```
 
 #### Option D: Self-hosted (VPS/Server)
+
 1. Build project:
+
 ```bash
 npm run build
 ```
@@ -142,6 +167,7 @@ npm run build
 2. Upload `dist/` folder to server
 
 3. Configure web server (nginx example):
+
 ```nginx
 server {
     listen 80;
@@ -156,6 +182,7 @@ server {
 ```
 
 4. Restart nginx:
+
 ```bash
 sudo systemctl restart nginx
 ```
@@ -165,6 +192,7 @@ sudo systemctl restart nginx
 ## 🔌 Part 3: ESP32 Hardware Setup
 
 ### Hardware Requirements (per unit)
+
 - ESP32 Development Board
 - Temperature Sensor (DS18B20 or DHT22)
 - Pressure Sensor (0-200 bar, 4-20mA output)
@@ -194,6 +222,7 @@ ESP32 Pin Connections:
 ```
 
 ### Step 1: Install Arduino IDE
+
 1. Download: https://www.arduino.cc/en/software
 2. Install ESP32 board support:
    - File > Preferences
@@ -202,6 +231,7 @@ ESP32 Pin Connections:
    - Search "esp32" and install
 
 ### Step 2: Install Libraries
+
 ```
 Tools > Manage Libraries > Install:
 - WiFi (built-in)
@@ -210,10 +240,12 @@ Tools > Manage Libraries > Install:
 ```
 
 For specific sensors:
+
 - DS18B20: `DallasTemperature` and `OneWire`
 - DHT22: `DHT sensor library`
 
 ### Step 3: Configure ESP32 Code
+
 Edit `esp32/reach_stacker_monitor.ino`:
 
 ```cpp
@@ -229,6 +261,7 @@ const char* reachStackerID = "RS-A"; // or RS-B, RS-C
 ```
 
 ### Step 4: Upload Code
+
 1. Connect ESP32 via USB
 2. Select board: **ESP32 Dev Module**
 3. Select port
@@ -236,6 +269,7 @@ const char* reachStackerID = "RS-A"; // or RS-B, RS-C
 5. Monitor serial output (9600 baud)
 
 ### Step 5: Test & Verify
+
 1. Check serial monitor for:
    - WiFi connection success
    - Sensor readings
@@ -244,6 +278,7 @@ const char* reachStackerID = "RS-A"; // or RS-B, RS-C
 3. Check dashboard updates
 
 ### Step 6: Install in Vehicle
+
 1. Mount ESP32 in weatherproof enclosure
 2. Connect to vehicle 12V/24V power (with voltage regulator)
 3. Route sensor cables properly
@@ -256,42 +291,51 @@ const char* reachStackerID = "RS-A"; // or RS-B, RS-C
 ## 🔍 Testing & Verification
 
 ### 1. Test Data Flow
+
 ```
 ESP32 → Google Sheets → Dashboard
 ```
 
 **Check 1:** ESP32 Serial Monitor
+
 - Should show sensor readings
 - Should show HTTP 200 response
 
 **Check 2:** Google Sheets
+
 - Open spreadsheet
 - Check data appears in correct sheet (RS-A/B/C)
 - Verify timestamp is correct (WIB)
 
 **Check 3:** Dashboard
+
 - Should show latest data
 - Should update every 10 seconds
 - Connection status should be "Connected"
 
 ### 2. Test Alert System
+
 **Temperature Alert:**
+
 - Simulate high temperature (>90°C)
 - Check dashboard shows red color
 - Verify notification appears (if enabled)
 
 **Emergency Stop:**
+
 - Activate emergency button
 - Check "EMERGENCY STOP ACTIVE" appears
 - Verify notification and sound alert
 
 **Connection Lost:**
+
 - Disconnect ESP32 or WiFi
 - Wait 5 minutes
 - Check "DISCONNECTED" status appears
 - Verify notification
 
 ### 3. Multi-Unit Test
+
 - Deploy 3 ESP32 units (RS-A, RS-B, RS-C)
 - Verify all units send data independently
 - Check dashboard can switch between units
@@ -302,18 +346,21 @@ ESP32 → Google Sheets → Dashboard
 ## 📊 Monitoring & Maintenance
 
 ### Daily Checks
+
 - [ ] All units showing "Connected" status
 - [ ] Data updates regularly
 - [ ] No critical alerts
 - [ ] Dashboard accessible
 
 ### Weekly Checks
+
 - [ ] Review alert history
 - [ ] Check data trends
 - [ ] Verify sensor calibration
 - [ ] Test notification system
 
 ### Monthly Checks
+
 - [ ] Review system performance
 - [ ] Check Google Sheets storage
 - [ ] Update firmware if needed
@@ -326,6 +373,7 @@ ESP32 → Google Sheets → Dashboard
 ### Problem: Dashboard tidak menampilkan data
 
 **Solution:**
+
 1. Cek Google Apps Script URL sudah benar
 2. Test API dengan browser
 3. Cek CORS settings
@@ -334,6 +382,7 @@ ESP32 → Google Sheets → Dashboard
 ### Problem: ESP32 tidak terkoneksi WiFi
 
 **Solution:**
+
 1. Cek SSID dan password
 2. Cek jarak ke access point
 3. Test dengan HP hotspot dulu
@@ -342,6 +391,7 @@ ESP32 → Google Sheets → Dashboard
 ### Problem: Data tidak masuk Google Sheets
 
 **Solution:**
+
 1. Cek Google Script deployment settings
 2. Verify "Anyone can access" enabled
 3. Check Apps Script logs (View > Executions)
@@ -350,6 +400,7 @@ ESP32 → Google Sheets → Dashboard
 ### Problem: Notifikasi tidak muncul
 
 **Solution:**
+
 1. Enable notifications di browser
 2. Klik bell icon di dashboard
 3. Test dengan manual alert trigger
@@ -358,6 +409,7 @@ ESP32 → Google Sheets → Dashboard
 ### Problem: Sensor readings tidak akurat
 
 **Solution:**
+
 1. Kalibrasi sensor sesuai datasheet
 2. Cek wiring connections
 3. Test sensor independently
@@ -368,11 +420,13 @@ ESP32 → Google Sheets → Dashboard
 ## 📱 Mobile Access
 
 Dashboard fully responsive, dapat diakses via:
+
 - Desktop browser
 - Tablet
 - Smartphone
 
 Untuk best experience on mobile:
+
 1. Add to Home Screen
 2. Enable notifications
 3. Use landscape mode untuk charts
@@ -382,17 +436,20 @@ Untuk best experience on mobile:
 ## 🔒 Security Notes
 
 ### Google Apps Script
+
 - ✅ Deployed as "Anyone can access" (required for ESP32 POST)
 - ⚠️ No authentication (data is public)
 - 📝 Consider adding API key for production
 
 ### WiFi Security
+
 - Use WPA2/WPA3
 - Create separate IoT network
 - Use strong passwords
 - Regularly update credentials
 
 ### Dashboard
+
 - Deploy with HTTPS
 - Consider adding login authentication
 - Restrict access to internal network
@@ -402,13 +459,16 @@ Untuk best experience on mobile:
 ## 📈 Scaling
 
 ### Adding More Units
+
 1. Create new sheet in Google Sheets (e.g., RS-D)
 2. Update `reachStackers` array in dashboard
 3. Deploy new ESP32 with correct ID
 4. No Apps Script changes needed
 
 ### Data Retention
+
 Google Sheets limits:
+
 - Max 10 million cells per spreadsheet
 - Consider archiving old data monthly
 - Use separate spreadsheet for historical data
@@ -418,6 +478,7 @@ Google Sheets limits:
 ## 📞 Support
 
 For issues or questions:
+
 1. Check this documentation
 2. Review troubleshooting section
 3. Check serial monitor logs
@@ -429,12 +490,14 @@ For issues or questions:
 ## ✅ Final Deployment Checklist
 
 ### Google Apps Script
+
 - [ ] Script deployed as Web App
 - [ ] "Anyone can access" enabled
 - [ ] API endpoint tested
 - [ ] URL documented
 
 ### Dashboard
+
 - [ ] Dependencies installed
 - [ ] Script URL updated
 - [ ] Build successful
@@ -444,6 +507,7 @@ For issues or questions:
 - [ ] Notifications work
 
 ### ESP32 (per unit)
+
 - [ ] Hardware assembled
 - [ ] Sensors calibrated
 - [ ] WiFi configured
@@ -458,6 +522,7 @@ For issues or questions:
 - [ ] Unit labeled
 
 ### System Test
+
 - [ ] All 3 units online
 - [ ] Data updating every 10s
 - [ ] Dashboard switching works
@@ -470,8 +535,8 @@ For issues or questions:
 
 **System Status:** ✅ Ready for Production
 
-**Deployment Date:** ___________
+**Deployment Date:** ****\_\_\_****
 
-**Deployed By:** ___________
+**Deployed By:** ****\_\_\_****
 
-**Notes:** ___________
+**Notes:** ****\_\_\_****

@@ -13,6 +13,7 @@ Sistem ini terdiri dari 3 komponen utama:
 ## 🎯 Fitur Utama
 
 ### Dashboard Features
+
 - ✅ Real-time monitoring untuk 3 unit (RS-A, RS-B, RS-C)
 - 📊 Live charts untuk temperature, pressure, oil, fuel, dan RPM
 - 🚨 Emergency stop detection dan alerts
@@ -22,6 +23,7 @@ Sistem ini terdiri dari 3 komponen utama:
 - 🔄 Auto-refresh setiap 10 detik
 
 ### Sensor Monitoring
+
 - 🌡️ **Temperature** - Engine temperature (°C)
 - ⚙️ **Pressure** - Hydraulic pressure (bar)
 - 🛢️ **Hydraulic Oil** - Oil level (%)
@@ -30,6 +32,7 @@ Sistem ini terdiri dari 3 komponen utama:
 - 🚨 **Emergency Stop** - Emergency button status
 
 ### Alert System
+
 - Critical temperature (>90°C)
 - Critical pressure (>150 bar)
 - Low hydraulic oil (<30%)
@@ -40,16 +43,19 @@ Sistem ini terdiri dari 3 komponen utama:
 ## 🚀 Quick Start
 
 ### 1. Install Dependencies
+
 ```bash
 npm install
 ```
 
 ### 2. Start Development Server
+
 ```bash
 npm run dev
 ```
 
 ### 3. Access Dashboard
+
 ```
 http://localhost:5173
 ```
@@ -77,26 +83,31 @@ laporan-pekerjaan/
 ## 🔧 Configuration
 
 ### Google Apps Script URL
+
 Update di `src/ReachStackerDashboard.jsx`:
+
 ```javascript
-const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_SCRIPT_URL_HERE';
+const GOOGLE_SCRIPT_URL = "YOUR_GOOGLE_SCRIPT_URL_HERE";
 ```
 
 Atau update di `src/config.js`:
+
 ```javascript
 export const config = {
-  googleScriptUrl: 'YOUR_GOOGLE_SCRIPT_URL_HERE',
+  googleScriptUrl: "YOUR_GOOGLE_SCRIPT_URL_HERE",
   // ...
 };
 ```
 
 ### Google Sheets
+
 - **Spreadsheet URL:** https://docs.google.com/spreadsheets/d/1yU8Ob6_3s0LTMQXiCEipgxubqsNherQlUdRghWjZsCg/edit
-- **Apps Script URL:** https://script.google.com/macros/s/AKfycbwQISoKcQ2iHnCc_LCveKKDBgRmTE-8TnM1DhDHpB9iqnsnsxnQjaiIV5zsXiA_tqBZxQ/exec
+- **Apps Script URL:** https://script.google.com/macros/s/AKfycbxWR6P0gby8gHFRFCPJIE3I85VAR3z45rCJ7FPhPdwqGoyNu9kyRKB2GMw_JS05FBm4gA/exec
 
 ## 🧪 Testing
 
 ### Test dengan HTML Tool
+
 1. Buka `test-sender.html` di browser
 2. Pilih unit (RS-A/B/C)
 3. Adjust sensor values
@@ -104,6 +115,7 @@ export const config = {
 5. Cek data muncul di dashboard
 
 ### Test dengan Postman
+
 ```bash
 POST https://script.google.com/macros/s/YOUR_ID/exec
 Content-Type: application/json
@@ -130,6 +142,7 @@ Content-Type: application/json
 ## 🔔 Notification Support
 
 Notifications supported on:
+
 - Desktop browsers (Chrome, Firefox, Edge)
 - Android Chrome
 - macOS Safari
@@ -151,6 +164,7 @@ Output akan ada di folder `dist/`
 ## 🛠️ Tech Stack
 
 ### Frontend
+
 - React 18
 - Tailwind CSS
 - Recharts (untuk charts)
@@ -158,10 +172,12 @@ Output akan ada di folder `dist/`
 - Vite (build tool)
 
 ### Backend
+
 - Google Apps Script
 - Google Sheets (database)
 
 ### Hardware
+
 - ESP32 Development Board
 - Temperature Sensor
 - Pressure Sensor
@@ -172,21 +188,25 @@ Output akan ada di folder `dist/`
 ## 📊 API Endpoints
 
 ### Get Data Unit Tertentu
+
 ```
 GET {SCRIPT_URL}?id=RS-A
 ```
 
 ### Get All Units Data
+
 ```
 GET {SCRIPT_URL}?id=all
 ```
 
 ### Get Connection Status
+
 ```
 GET {SCRIPT_URL}?id=status
 ```
 
 ### Post Sensor Data (dari ESP32)
+
 ```
 POST {SCRIPT_URL}
 Content-Type: application/json
@@ -200,26 +220,29 @@ Content-Type: application/json
 
 ## ⚙️ Sensor Thresholds
 
-| Sensor | Normal | Warning | Danger |
-|--------|--------|---------|--------|
-| Temperature | <80°C | 80-90°C | >90°C |
-| Pressure | <130 bar | 130-150 bar | >150 bar |
-| Hydraulic Oil | >50% | 30-50% | <30% |
-| Fuel Level | >40% | 20-40% | <20% |
+| Sensor        | Normal   | Warning     | Danger   |
+| ------------- | -------- | ----------- | -------- |
+| Temperature   | <80°C    | 80-90°C     | >90°C    |
+| Pressure      | <130 bar | 130-150 bar | >150 bar |
+| Hydraulic Oil | >50%     | 30-50%      | <30%     |
+| Fuel Level    | >40%     | 20-40%      | <20%     |
 
 ## 🐛 Troubleshooting
 
 ### Dashboard tidak menampilkan data
+
 - Cek Google Apps Script URL sudah benar
 - Test API endpoint dengan browser
 - Cek console browser untuk errors
 
 ### ESP32 tidak connect
+
 - Verify WiFi credentials
 - Check Google Script URL
 - Monitor serial output
 
 ### Notifikasi tidak muncul
+
 - Enable notifications di browser
 - Klik bell icon di dashboard
 - Check browser notification settings
@@ -227,6 +250,7 @@ Content-Type: application/json
 ## 📞 Support & Contact
 
 Untuk pertanyaan dan support:
+
 - Review documentation files
 - Check troubleshooting section
 - Contact IT support team
@@ -242,6 +266,7 @@ MIT License - Free to use and modify
 ## 🔄 Updates
 
 **Version 1.0.0** (Current)
+
 - ✅ Real-time monitoring untuk 3 units
 - ✅ Google Sheets integration
 - ✅ Browser notifications
@@ -253,6 +278,7 @@ MIT License - Free to use and modify
 ## 🎯 Roadmap
 
 Future improvements:
+
 - [ ] Historical data analysis
 - [ ] PDF report generation
 - [ ] SMS alerts
@@ -269,4 +295,7 @@ Future improvements:
 **Deployed By:** IT Team
 
 For detailed setup instructions, see [DEPLOYMENT-GUIDE.md](./DEPLOYMENT-GUIDE.md)
+
+```
+
 ```

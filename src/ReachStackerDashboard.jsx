@@ -34,7 +34,6 @@ const ReachStackerDashboard = () => {
   const [previousEmergencyState, setPreviousEmergencyState] = useState({});
   const [connectionStatus, setConnectionStatus] = useState({});
   const [allUnitsData, setAllUnitsData] = useState({});
-  const [lastDataTimestamps, setLastDataTimestamps] = useState({}); // Track last data timestamp for each unit
 
   const reachStackers = [
     { id: "RS-A", name: "Reach Stacker A", color: "bg-blue-500" },
@@ -188,29 +187,32 @@ const ReachStackerDashboard = () => {
   };
 
   const checkConnectionStatus = (rsID, latest) => {
-    if (!latest || !latest.fullTimestamp) return;
-
-    const currentTimestamp = new Date(latest.fullTimestamp).getTime();
-    const previousTimestamp = lastDataTimestamps[rsID];
-
-    // Check if this is new data (timestamp is different from previous)
-    const isNewData = !previousTimestamp || currentTimestamp > previousTimestamp;
-
-    // Update last data timestamp
-    if (isNewData) {
-      setLastDataTimestamps((prev) => ({
+    if (!latest || !latest.fullTimestamp) {
+      setConnectionStatus((prev) => ({
         ...prev,
-        [rsID]: currentTimestamp,
+        [rsID]: {
+          status: "disconnected",
+          lastSeen: prev[rsID]?.lastSeen || new Date(),
+        },
       }));
+      return;
     }
 
-    // Determine connection status based on data freshness
-    const now = new Date().getTime();
-    const diffSeconds = (now - currentTimestamp) / 1000;
-    const status = diffSeconds <= 5 ? "connected" : "disconnected";
+    const now = new Date();
+    const lastUpdate = new Date(latest.fullTimestamp);
 
     setConnectionStatus((prev) => {
-      const prevStatus = prev[rsID]?.status;
+      const prevData = prev[rsID];
+      const prevCount = prevData?.dataCount || 0;
+      const currentCount = allUnitsData[rsID]?.data?.length || 0;
+      const prevStatus = prevData?.status;
+      
+      // Status ditentukan berdasarkan bertambahnya data baru
+      const hasNewData = currentCount > prevCount;
+      const diffSeconds = (now - lastUpdate) / 1000;
+      
+      // Connected jika ada data baru atau data terakhir dalam 5 detik terakhir
+      const status = (hasNewData || diffSeconds < 5) ? "connected" : "disconnected";
 
       // Send notification if status changed to disconnected
       if (
@@ -220,7 +222,7 @@ const ReachStackerDashboard = () => {
       ) {
         showNotification(
           `📡 Connection Lost - ${rsID}`,
-          `Unit ${rsID} telah terputus dari sistem (tidak ada data baru > 5 detik)`,
+          `Unit ${rsID} telah terputus dari sistem`,
           "warning"
         );
       }
@@ -229,8 +231,10 @@ const ReachStackerDashboard = () => {
         ...prev,
         [rsID]: {
           status: status,
-          lastSeen: new Date(latest.fullTimestamp),
-          hasNewData: isNewData,
+          lastSeen: lastUpdate,
+          dataCount: currentCount,
+          lastUpdate: now,
+          isNewData: hasNewData,
         },
       };
     });
@@ -298,7 +302,7 @@ const ReachStackerDashboard = () => {
     const interval = setInterval(() => {
       fetchData(selectedRS);
       fetchAllUnitsStatus();
-    }, 10000); // Refresh setiap 10 detik
+    }, 1000); // Refresh setiap 1 detik
 
     return () => clearInterval(interval);
   }, [selectedRS, notificationsEnabled]);
@@ -596,105 +600,6 @@ const ReachStackerDashboard = () => {
               )}
             </div>
           </div>
-        </div>
-
-        {/* All Units Status Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          {reachStackers.map((rs) => {
-            const badge = getConnectionBadge(rs.id);
-            const unitData = allUnitsData[rs.id];
-            return (
-              <div
-                key={rs.id}
-                onClick={() => setSelectedRS(rs.id)}
-                className={`bg-white rounded-xl shadow-md p-4 cursor-pointer transition-all hover:shadow-lg ${
-                  selectedRS === rs.id ? "ring-2 ring-blue-500" : ""
-                }`}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-3 h-3 rounded-full ${rs.color}`}></div>
-                    <h3 className="font-bold text-gray-800 text-sm">
-                      {rs.name}
-                    </h3>
-                  </div>
-                  <div
-                    className={`px-2 py-1 rounded-full flex items-center gap-1 ${
-                      badge.status === "connected"
-                        ? "bg-green-100"
-                        : "bg-red-100"
-                    }`}
-                  >
-                    <span
-                      className={`w-2 h-2 rounded-full ${badge.color} ${
-                        badge.pulse ? "animate-pulse" : ""
-                      }`}
-                    ></span>
-                    <span
-                      className={`text-xs font-semibold ${
-                        badge.status === "connected"
-                          ? "text-green-700"
-                          : "text-red-700"
-                      }`}
-                    >
-                      {badge.text}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Status Text */}
-                <div className="mb-3">
-                  <p
-                    className={`text-sm font-bold ${
-                      badge.status === "connected"
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }`}
-                  >
-                    {badge.status === "connected"
-                      ? "● CONNECTED"
-                      : "○ DISCONNECTED"}
-                  </p>
-                  {badge.status === "disconnected" &&
-                    connectionStatus[rs.id]?.lastSeen && (
-                      <p className="text-xs text-gray-500 mt-1">
-                        Last seen:{" "}
-                        {connectionStatus[rs.id].lastSeen.toLocaleTimeString(
-                          "id-ID"
-                        )}
-                      </p>
-                    )}
-                </div>
-
-                {unitData?.lastData && (
-                  <div className="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-gray-100">
-                    <div>
-                      <p className="text-gray-500">Temp</p>
-                      <p className="font-semibold text-gray-700">
-                        {parseFloat(
-                          unitData.lastData["Temperature (°C)"]
-                        ).toFixed(1)}
-                        °C
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">Fuel</p>
-                      <p className="font-semibold text-gray-700">
-                        {parseFloat(
-                          unitData.lastData["Fuel Level (%)"]
-                        ).toFixed(1)}
-                        %
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {!unitData?.lastData && badge.status === "disconnected" && (
-                  <p className="text-xs text-red-500 mt-2">No data available</p>
-                )}
-              </div>
-            );
-          })}
         </div>
 
         {/* Emergency Alert */}

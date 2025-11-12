@@ -10,10 +10,12 @@ export const config = {
     "https://docs.google.com/spreadsheets/d/1yU8Ob6_3s0LTMQXiCEipgxubqsNherQlUdRghWjZsCg/edit",
 
   // Refresh interval (milliseconds)
-  refreshInterval: 10000, // 10 seconds
+  refreshInterval: 1000, // 1 detik
 
-  // Connection timeout threshold (seconds)
-  connectionTimeout: 5, // Mark as disconnected if no new data in 5 seconds
+  // Connection timeout thresholds (seconds)
+  connectionThresholds: {
+    disconnected: 5, // Mark as disconnected if no update in 5 seconds
+  },
 
   // Sensor thresholds
   thresholds: {

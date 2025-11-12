@@ -12,11 +12,8 @@ export const config = {
   // Refresh interval (milliseconds)
   refreshInterval: 10000, // 10 seconds
 
-  // Connection timeout thresholds (minutes)
-  connectionThresholds: {
-    warning: 1, // Show warning if no update in 1 minute
-    disconnected: 5, // Mark as disconnected if no update in 5 minutes
-  },
+  // Connection timeout threshold (seconds)
+  connectionTimeout: 5, // Mark as disconnected if no new data in 5 seconds
 
   // Sensor thresholds
   thresholds: {

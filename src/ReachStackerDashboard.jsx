@@ -34,6 +34,7 @@ const ReachStackerDashboard = () => {
   const [previousEmergencyState, setPreviousEmergencyState] = useState({});
   const [connectionStatus, setConnectionStatus] = useState({});
   const [allUnitsData, setAllUnitsData] = useState({});
+  const [lastDataTimestamps, setLastDataTimestamps] = useState({}); // Track last data timestamp for each unit
 
   const reachStackers = [
     { id: "RS-A", name: "Reach Stacker A", color: "bg-blue-500" },
@@ -189,16 +190,24 @@ const ReachStackerDashboard = () => {
   const checkConnectionStatus = (rsID, latest) => {
     if (!latest || !latest.fullTimestamp) return;
 
-    const now = new Date();
-    const lastUpdate = new Date(latest.fullTimestamp);
-    const diffMinutes = (now - lastUpdate) / (1000 * 60);
+    const currentTimestamp = new Date(latest.fullTimestamp).getTime();
+    const previousTimestamp = lastDataTimestamps[rsID];
 
-    let status = "connected";
-    if (diffMinutes > 5) {
-      status = "disconnected";
-    } else if (diffMinutes > 1) {
-      status = "warning";
+    // Check if this is new data (timestamp is different from previous)
+    const isNewData = !previousTimestamp || currentTimestamp > previousTimestamp;
+
+    // Update last data timestamp
+    if (isNewData) {
+      setLastDataTimestamps((prev) => ({
+        ...prev,
+        [rsID]: currentTimestamp,
+      }));
     }
+
+    // Determine connection status based on data freshness
+    const now = new Date().getTime();
+    const diffSeconds = (now - currentTimestamp) / 1000;
+    const status = diffSeconds <= 5 ? "connected" : "disconnected";
 
     setConnectionStatus((prev) => {
       const prevStatus = prev[rsID]?.status;
@@ -211,7 +220,7 @@ const ReachStackerDashboard = () => {
       ) {
         showNotification(
           `📡 Connection Lost - ${rsID}`,
-          `Unit ${rsID} telah terputus dari sistem`,
+          `Unit ${rsID} telah terputus dari sistem (tidak ada data baru > 5 detik)`,
           "warning"
         );
       }
@@ -220,7 +229,8 @@ const ReachStackerDashboard = () => {
         ...prev,
         [rsID]: {
           status: status,
-          lastSeen: lastUpdate,
+          lastSeen: new Date(latest.fullTimestamp),
+          hasNewData: isNewData,
         },
       };
     });
@@ -361,11 +371,11 @@ const ReachStackerDashboard = () => {
 
   const currentRS = reachStackers.find((rs) => rs.id === selectedRS);
   const currentConnection = connectionStatus[selectedRS] || {
-    status: "connecting",
+    status: "disconnected",
   };
 
   const getConnectionBadge = (rsID) => {
-    const conn = connectionStatus[rsID] || { status: "connecting" };
+    const conn = connectionStatus[rsID] || { status: "disconnected" };
 
     if (conn.status === "connected") {
       return {
@@ -374,26 +384,12 @@ const ReachStackerDashboard = () => {
         icon: "●",
         pulse: true,
       };
-    } else if (conn.status === "warning") {
-      return {
-        color: "bg-yellow-500",
-        text: "Slow",
-        icon: "●",
-        pulse: true,
-      };
-    } else if (conn.status === "disconnected") {
+    } else {
       return {
         color: "bg-red-500",
         text: "Disconnected",
         icon: "○",
         pulse: false,
-      };
-    } else {
-      return {
-        color: "bg-gray-400",
-        text: "Connecting",
-        icon: "◐",
-        pulse: true,
       };
     }
   };
@@ -556,22 +552,14 @@ const ReachStackerDashboard = () => {
                 className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
                   currentConnection.status === "connected"
                     ? "bg-green-100"
-                    : currentConnection.status === "warning"
-                    ? "bg-yellow-100"
-                    : currentConnection.status === "disconnected"
-                    ? "bg-red-100"
-                    : "bg-gray-100"
+                    : "bg-red-100"
                 }`}
               >
                 <div
                   className={`w-3 h-3 rounded-full ${
                     currentConnection.status === "connected"
                       ? "bg-green-500 animate-pulse"
-                      : currentConnection.status === "warning"
-                      ? "bg-yellow-500 animate-pulse"
-                      : currentConnection.status === "disconnected"
-                      ? "bg-red-500"
-                      : "bg-gray-400 animate-spin"
+                      : "bg-red-500"
                   }`}
                 ></div>
                 <div className="text-left">
@@ -579,20 +567,12 @@ const ReachStackerDashboard = () => {
                     className={`text-xs font-semibold ${
                       currentConnection.status === "connected"
                         ? "text-green-700"
-                        : currentConnection.status === "warning"
-                        ? "text-yellow-700"
-                        : currentConnection.status === "disconnected"
-                        ? "text-red-700"
-                        : "text-gray-700"
+                        : "text-red-700"
                     }`}
                   >
                     {currentConnection.status === "connected"
                       ? "CONNECTED"
-                      : currentConnection.status === "warning"
-                      ? "SLOW CONNECTION"
-                      : currentConnection.status === "disconnected"
-                      ? "DISCONNECTED"
-                      : "CONNECTING..."}
+                      : "DISCONNECTED"}
                   </p>
                   {currentConnection.lastSeen && (
                     <p className="text-xs text-gray-500">
@@ -642,11 +622,7 @@ const ReachStackerDashboard = () => {
                     className={`px-2 py-1 rounded-full flex items-center gap-1 ${
                       badge.status === "connected"
                         ? "bg-green-100"
-                        : badge.status === "warning"
-                        ? "bg-yellow-100"
-                        : badge.status === "disconnected"
-                        ? "bg-red-100"
-                        : "bg-gray-100"
+                        : "bg-red-100"
                     }`}
                   >
                     <span
@@ -658,11 +634,7 @@ const ReachStackerDashboard = () => {
                       className={`text-xs font-semibold ${
                         badge.status === "connected"
                           ? "text-green-700"
-                          : badge.status === "warning"
-                          ? "text-yellow-700"
-                          : badge.status === "disconnected"
-                          ? "text-red-700"
-                          : "text-gray-700"
+                          : "text-red-700"
                       }`}
                     >
                       {badge.text}
@@ -676,20 +648,12 @@ const ReachStackerDashboard = () => {
                     className={`text-sm font-bold ${
                       badge.status === "connected"
                         ? "text-green-600"
-                        : badge.status === "warning"
-                        ? "text-yellow-600"
-                        : badge.status === "disconnected"
-                        ? "text-red-600"
-                        : "text-gray-600"
+                        : "text-red-600"
                     }`}
                   >
                     {badge.status === "connected"
                       ? "● CONNECTED"
-                      : badge.status === "warning"
-                      ? "● SLOW CONNECTION"
-                      : badge.status === "disconnected"
-                      ? "○ DISCONNECTED"
-                      : "◐ CONNECTING..."}
+                      : "○ DISCONNECTED"}
                   </p>
                   {badge.status === "disconnected" &&
                     connectionStatus[rs.id]?.lastSeen && (

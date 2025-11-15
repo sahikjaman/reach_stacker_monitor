@@ -59,51 +59,6 @@ npm run dev
 ```
 http://localhost:5173
 ```
-
-## 📂 Project Structure
-
-```
-laporan-pekerjaan/
-├── src/
-│   ├── ReachStackerDashboard.jsx  # Main dashboard component
-│   ├── config.js                   # Configuration file
-│   ├── main.jsx                    # Entry point
-│   └── index.css                   # Global styles
-├── esp32/
-│   └── reach_stacker_monitor.ino   # ESP32 Arduino code
-├── api/
-│   └── apps-script.js              # Google Apps Script code
-├── test-sender.html                # Test tool untuk kirim dummy data
-├── README-DASHBOARD.md             # Dashboard documentation
-├── DEPLOYMENT-GUIDE.md             # Complete deployment guide
-└── package.json
-
-```
-
-## 🔧 Configuration
-
-### Google Apps Script URL
-
-Update di `src/ReachStackerDashboard.jsx`:
-
-```javascript
-const GOOGLE_SCRIPT_URL = "YOUR_GOOGLE_SCRIPT_URL_HERE";
-```
-
-Atau update di `src/config.js`:
-
-```javascript
-export const config = {
-  googleScriptUrl: "YOUR_GOOGLE_SCRIPT_URL_HERE",
-  // ...
-};
-```
-
-### Google Sheets
-
-- **Spreadsheet URL:** https://docs.google.com/spreadsheets/d/1yU8Ob6_3s0LTMQXiCEipgxubqsNherQlUdRghWjZsCg/edit
-- **Apps Script URL:** https://script.google.com/macros/s/AKfycbxWR6P0gby8gHFRFCPJIE3I85VAR3z45rCJ7FPhPdwqGoyNu9kyRKB2GMw_JS05FBm4gA/exec
-
 ## 🧪 Testing
 
 ### Test dengan HTML Tool
@@ -113,23 +68,6 @@ export const config = {
 3. Adjust sensor values
 4. Klik "Send Data"
 5. Cek data muncul di dashboard
-
-### Test dengan Postman
-
-```bash
-POST https://script.google.com/macros/s/YOUR_ID/exec
-Content-Type: application/json
-
-{
-  "reachStackerID": "RS-A",
-  "temperature": 75.5,
-  "pressure": 120.3,
-  "hydraulicOil": 85.2,
-  "fuelLevel": 67.8,
-  "engineRPM": 1800,
-  "emergencyStop": 0
-}
-```
 
 ## 📱 Browser Compatibility
 
@@ -226,34 +164,6 @@ Content-Type: application/json
 | Pressure      | <130 bar | 130-150 bar | >150 bar |
 | Hydraulic Oil | >50%     | 30-50%      | <30%     |
 | Fuel Level    | >40%     | 20-40%      | <20%     |
-
-## 🐛 Troubleshooting
-
-### Dashboard tidak menampilkan data
-
-- Cek Google Apps Script URL sudah benar
-- Test API endpoint dengan browser
-- Cek console browser untuk errors
-
-### ESP32 tidak connect
-
-- Verify WiFi credentials
-- Check Google Script URL
-- Monitor serial output
-
-### Notifikasi tidak muncul
-
-- Enable notifications di browser
-- Klik bell icon di dashboard
-- Check browser notification settings
-
-## 📞 Support & Contact
-
-Untuk pertanyaan dan support:
-
-- Review documentation files
-- Check troubleshooting section
-- Contact IT support team
 
 ## 👨‍💻 Development Team
 

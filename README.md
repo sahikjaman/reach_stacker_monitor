@@ -40,25 +40,6 @@ Sistem ini terdiri dari 3 komponen utama:
 - Emergency stop activation
 - Connection lost detection
 
-## 🚀 Quick Start
-
-### 1. Install Dependencies
-
-```bash
-npm install
-```
-
-### 2. Start Development Server
-
-```bash
-npm run dev
-```
-
-### 3. Access Dashboard
-
-```
-http://localhost:5173
-```
 ## 🧪 Testing
 
 ### Test dengan HTML Tool
@@ -195,14 +176,6 @@ Future improvements:
 - [ ] Maintenance scheduling
 - [ ] User authentication
 - [ ] Multi-language support
-
----
-
-**System Status:** ✅ Production Ready
-
-**Last Updated:** November 2025
-
-**Deployed By:** IT Team
 
 For detailed setup instructions, see [DEPLOYMENT-GUIDE.md](./DEPLOYMENT-GUIDE.md)
 
